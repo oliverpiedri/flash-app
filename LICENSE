@@ -1,21 +1,123 @@
-MIT License
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  phone TEXT,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('passenger','driver','admin')),
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-Copyright (c) 2026 oliverpiedri
+CREATE TABLE passenger_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  preferred_payment TEXT,
+  default_location TEXT,
+  favorite_addresses JSONB
+);
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+CREATE TABLE driver_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  vehicle_model TEXT,
+  plate TEXT,
+  color TEXT,
+  documents JSONB,
+  status TEXT DEFAULT 'pending_verification'
+);
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+CREATE TABLE vehicles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  driver_id UUID NOT NULL REFERENCES users(id),
+  model TEXT,
+  plate TEXT,
+  color TEXT,
+  year INT,
+  category TEXT,
+  status TEXT DEFAULT 'active'
+);
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+CREATE TABLE trips (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  passenger_id UUID NOT NULL REFERENCES users(id),
+  driver_id UUID REFERENCES users(id),
+  origin TEXT NOT NULL,
+  destination TEXT NOT NULL,
+  category TEXT,
+  status TEXT NOT NULL,
+  payment_method TEXT,
+  estimate_price NUMERIC(10,2),
+  final_price NUMERIC(10,2),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  started_at TIMESTAMPTZ,
+  ended_at TIMESTAMPTZ
+);
+
+CREATE TABLE trip_positions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID NOT NULL REFERENCES trips(id),
+  latitude NUMERIC(10,7),
+  longitude NUMERIC(10,7),
+  speed NUMERIC(6,2),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE payment_methods (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  method_type TEXT NOT NULL,
+  provider TEXT,
+  token TEXT,
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE payments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trip_id UUID REFERENCES trips(id),
+  user_id UUID NOT NULL REFERENCES users(id),
+  amount NUMERIC(10,2) NOT NULL,
+  method TEXT NOT NULL,
+  status TEXT NOT NULL,
+  provider_reference TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE promo_codes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code TEXT NOT NULL UNIQUE,
+  discount_percent NUMERIC(5,2),
+  discount_fixed NUMERIC(10,2),
+  valid_from TIMESTAMPTZ,
+  valid_until TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  read_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE support_tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id),
+  trip_id UUID REFERENCES trips(id),
+  category TEXT,
+  message TEXT,
+  status TEXT DEFAULT 'open',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  action TEXT NOT NULL,
+  entity TEXT,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

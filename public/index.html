@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FLASH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-icon">⚡</div>
+          <span>FLASH</span>
+        </div>
+        <nav class="topnav">
+          <button class="nav-btn active" data-screen="passenger">Passageiro</button>
+          <button class="nav-btn" data-screen="driver">Motorista</button>
+          <button class="nav-btn" data-screen="admin">Admin</button>
+        </nav>
+      </header>
+
+      <main class="screen-stack">
+        <section id="auth-screen" class="screen visible">
+          <div class="auth-box">
+            <div class="logo-wrap">
+              <div class="logo-badge">⚡</div>
+              <h1>FLASH</h1>
+            </div>
+
+            <div class="auth-toggle">
+              <button class="tab active" data-auth="login">Entrar</button>
+              <button class="tab" data-auth="signup">Criar conta</button>
+            </div>
+
+            <form id="auth-form" class="auth-form">
+              <input id="auth-name" type="text" placeholder="Nome completo" class="hidden" />
+              <input id="auth-email" type="email" placeholder="E-mail" required />
+              <input id="auth-phone" type="tel" placeholder="Celular" class="hidden" />
+              <input id="auth-password" type="password" placeholder="Senha" required />
+              <select id="auth-role" class="hidden">
+                <option value="passenger">Passageiro</option>
+                <option value="driver">Motorista</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button type="submit" class="primary-btn">Continuar</button>
+            </form>
+
+            <div class="small-links">
+              <a href="#">Termos</a>
+              <a href="#">Privacidade</a>
+              <a href="#">Ajuda</a>
+            </div>
+          </div>
+        </section>
+
+        <section id="passenger-screen" class="screen">
+          <div class="panel hero-card">
+            <div class="card-header">
+              <span>Minha viagem</span>
+              <button id="logout-btn" class="ghost-btn">Sair</button>
+            </div>
+            <div class="trip-form">
+              <label>Origem
+                <input id="origin-input" type="text" value="Avenida Paulista, 1000" />
+              </label>
+              <label>Destino
+                <input id="destination-input" type="text" value="Parque Ibirapuera" />
+              </label>
+              <label>Categoria
+                <select id="category-select">
+                  <option>FLASH Econômico</option>
+                  <option selected>FLASH Conforto</option>
+                  <option>FLASH Premium</option>
+                  <option>FLASH Moto</option>
+                </select>
+              </label>
+              <label>Pagamento
+                <select id="payment-method">
+                  <option>Cartão</option>
+                  <option>Pix</option>
+                  <option>Dinheiro</option>
+                  <option>Saldo</option>
+                </select>
+              </label>
+              <div class="price-box">
+                <span>Estimativa</span>
+                <strong id="fare-value">R$ 31,90</strong>
+              </div>
+              <button id="request-trip-btn" class="primary-btn">Solicitar corrida</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Resumo</h3>
+            <ul id="trip-list" class="trip-list"></ul>
+          </div>
+        </section>
+
+        <section id="driver-screen" class="screen">
+          <div class="panel hero-card">
+            <div class="card-header">
+              <span>Motorista</span>
+              <button id="driver-status-btn" class="primary-btn small">Disponível</button>
+            </div>
+            <div class="driver-metrics">
+              <div>
+                <strong>18</strong>
+                <span>viagens</span>
+              </div>
+              <div>
+                <strong>R$ 1.420</strong>
+                <span>receita</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Solicitações</h3>
+            <ul id="driver-trips" class="trip-list"></ul>
+          </div>
+        </section>
+
+        <section id="admin-screen" class="screen">
+          <div class="panel hero-card">
+            <div class="card-header">
+              <span>Admin</span>
+              <button class="ghost-btn">Visualizar</button>
+            </div>
+            <div class="admin-grid">
+              <div><strong id="admin-trips">0</strong><span>Viagens</span></div>
+              <div><strong id="admin-revenue">R$ 0</strong><span>Receita</span></div>
+              <div><strong id="admin-drivers">0</strong><span>Motoristas</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Últimas movimentações</h3>
+            <ul id="admin-list" class="trip-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
